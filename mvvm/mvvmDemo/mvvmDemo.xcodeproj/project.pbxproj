@@ -19,6 +19,7 @@
 		C2153D1A23ED3E5D0071BD0B /* mvvmDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C2153D1923ED3E5D0071BD0B /* mvvmDemoTests.m */; };
 		C2153D2523ED3E5D0071BD0B /* mvvmDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = C2153D2423ED3E5D0071BD0B /* mvvmDemoUITests.m */; };
 		C2153D3423ED4B240071BD0B /* PersonScoreVM.m in Sources */ = {isa = PBXBuildFile; fileRef = C2153D3323ED4B240071BD0B /* PersonScoreVM.m */; };
+		C2311AB623F017D900E06AB4 /* PersonM.m in Sources */ = {isa = PBXBuildFile; fileRef = C2311AB523F017D900E06AB4 /* PersonM.m */; };
 		FD8FE054209C7556763D03FE /* libPods-mvvmDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57E1483AC8ADB6632E9FE4EB /* libPods-mvvmDemo.a */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +70,8 @@
 		C2153D2623ED3E5D0071BD0B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C2153D3223ED4B240071BD0B /* PersonScoreVM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PersonScoreVM.h; sourceTree = "<group>"; };
 		C2153D3323ED4B240071BD0B /* PersonScoreVM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PersonScoreVM.m; sourceTree = "<group>"; };
+		C2311AB423F017D900E06AB4 /* PersonM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PersonM.h; sourceTree = "<group>"; };
+		C2311AB523F017D900E06AB4 /* PersonM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PersonM.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +145,8 @@
 				C2153D0423ED3E580071BD0B /* ViewController.m */,
 				C2153D3223ED4B240071BD0B /* PersonScoreVM.h */,
 				C2153D3323ED4B240071BD0B /* PersonScoreVM.m */,
+				C2311AB423F017D900E06AB4 /* PersonM.h */,
+				C2311AB523F017D900E06AB4 /* PersonM.m */,
 				C2153D0623ED3E580071BD0B /* Main.storyboard */,
 				C2153D0923ED3E5D0071BD0B /* Assets.xcassets */,
 				C2153D0B23ED3E5D0071BD0B /* LaunchScreen.storyboard */,
@@ -384,6 +389,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C2311AB623F017D900E06AB4 /* PersonM.m in Sources */,
 				C2153D0523ED3E580071BD0B /* ViewController.m in Sources */,
 				C2153CFF23ED3E580071BD0B /* AppDelegate.m in Sources */,
 				C2153D1023ED3E5D0071BD0B /* main.m in Sources */,

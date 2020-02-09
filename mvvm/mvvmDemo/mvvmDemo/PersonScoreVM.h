@@ -8,18 +8,22 @@
 
 #import <Foundation/Foundation.h>
 #import <ReactiveObjC.h>
-
+#import "PersonM.h"
 NS_ASSUME_NONNULL_BEGIN
 
 @interface PersonScoreVM : NSObject
 
-@property(nonatomic, copy) NSString *name;
+@property(nonatomic, strong) PersonM* person;
 
 //stepper
-@property(nonatomic, assign) double score;
 @property(nonatomic, assign) double minValue;
 @property(nonatomic, assign) double maxValue;
 @property(nonatomic, assign) double stepNumber;
+
+@property(nonatomic, assign) double scoreChangedCrtTimes;
+
+//上传成功 代理
+@property(nonatomic, strong) RACSubject *uploadSucSubject;
 
 //todo:id改为UIButton？此时，需要导入UIKit
 - (void)uploadBtnDC:(id)btn;
@@ -29,9 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (RACSignal *)forbiddenNameSignal;
 
 //stepper是否隐藏
+- (RACSignal *)stepperNeedsHiddenSignal;
 
-//stepper和upload按钮是否隐藏
-
+//upload按钮是否隐藏
+- (RACSignal *)uploadBtnHiddenSignal;
 
 + (instancetype)vm;
 
