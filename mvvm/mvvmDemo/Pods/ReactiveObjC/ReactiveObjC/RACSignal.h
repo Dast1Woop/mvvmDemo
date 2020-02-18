@@ -19,7 +19,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RACSignal<__covariant ValueType> : RACStream
+    @interface RACSignal<__covariant ValueType> : RACStream
 
 /// Creates a new signal. This is the preferred way to create a new signal
 /// operation or behavior.

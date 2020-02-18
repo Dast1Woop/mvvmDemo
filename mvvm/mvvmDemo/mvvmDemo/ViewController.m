@@ -117,11 +117,102 @@
 
 #pragma mark -  test
 - (void)testRAC{
-    [self replay];
     
 //    [self takeUntil];
 //    [self testSubject];
-    [self testPublishConnect];
+//    [self testPublishConnect];
+//    [self testReplay];
+//    [self testReplayLazily];
+    [self testReplayLast];
+}
+
+- (void)testReplayLast{
+    RACSignal *lSig = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+              NSLog(@"sig 内部开始执行");
+              [[RACScheduler mainThreadScheduler] afterDelay:1 schedule:^{
+                  [subscriber sendNext:@1];
+              }];
+              
+              [[RACScheduler mainThreadScheduler] afterDelay:2 schedule:^{
+                  [subscriber sendNext:@2];
+              }];
+              
+              [[RACScheduler mainThreadScheduler] afterDelay:3 schedule:^{
+                  [subscriber sendNext:@3];
+              }];
+              [[RACScheduler mainThreadScheduler] afterDelay:4 schedule:^{
+                  [subscriber sendCompleted];
+              }];
+              return nil;
+          }];
+    
+    [[RACScheduler mainThreadScheduler] afterDelay:0.1 schedule:^{
+        RACSignal *lSigTemp = lSig.replayLast;
+        
+        //replayLast：能收到最后一条历史消息。
+        [[RACScheduler mainThreadScheduler] afterDelay:3.5 schedule:^{
+            [lSigTemp subscribeNext:^(id  _Nullable x) {
+                NSLog(@"3.5:%@",x);
+            }];
+        }];
+        
+        [[RACScheduler mainThreadScheduler] afterDelay:5 schedule:^{
+            [lSigTemp subscribeNext:^(id  _Nullable x) {
+                NSLog(@"5:%@",x);
+            }];
+        }];
+        
+        [[RACScheduler mainThreadScheduler] afterDelay:8 schedule:^{
+            [lSigTemp subscribeNext:^(id  _Nullable x) {
+                NSLog(@"8:%@",x);
+            }];
+        }];
+    }];
+}
+
+- (void)testReplayLazily{
+    RACSignal *lSig = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+           NSLog(@"sig 内部开始执行");
+           [[RACScheduler mainThreadScheduler] afterDelay:1 schedule:^{
+               [subscriber sendNext:@1];
+           }];
+           
+           [[RACScheduler mainThreadScheduler] afterDelay:2 schedule:^{
+               [subscriber sendNext:@2];
+           }];
+           
+           [[RACScheduler mainThreadScheduler] afterDelay:3 schedule:^{
+               [subscriber sendNext:@3];
+           }];
+           [[RACScheduler mainThreadScheduler] afterDelay:4 schedule:^{
+               [subscriber sendCompleted];
+           }];
+           return nil;
+       }];
+    
+    [[RACScheduler mainThreadScheduler] afterDelay:0.1 schedule:^{
+        RACSignal *lSigTemp = lSig.replayLazily;
+        
+        //replay!so 能收到 所有 消息。
+        [[RACScheduler mainThreadScheduler] afterDelay:3.5 schedule:^{
+            [lSigTemp subscribeNext:^(id  _Nullable x) {
+                NSLog(@"3.5:%@",x);
+            }];
+        }];
+        
+        [[RACScheduler mainThreadScheduler] afterDelay:5 schedule:^{
+            [lSigTemp subscribeNext:^(id  _Nullable x) {
+                NSLog(@"5:%@",x);
+            }];
+        }];
+        
+        [[RACScheduler mainThreadScheduler] afterDelay:8 schedule:^{
+            [lSigTemp subscribeNext:^(id  _Nullable x) {
+                NSLog(@"8:%@",x);
+            }];
+        }];
+    }];
+    
 }
 
 - (void)testPublishConnect{
@@ -157,10 +248,17 @@
     }];
     
     [[RACScheduler mainThreadScheduler] afterDelay:2.1 schedule:^{
-          [lSigHot subscribeNext:^(id  _Nullable x) {
-              NSLog(@"2:%@",x);
-          }];
-      }];
+        [lSigHot subscribeNext:^(id  _Nullable x) {
+            NSLog(@"2:%@",x);
+        }];
+    }];
+    
+    //5s时，codeSig已经发送完成，此热信号没有replay功能，故订阅后搜不到消息。
+    [[RACScheduler mainThreadScheduler] afterDelay:5 schedule:^{
+        [lSigHot subscribeNext:^(id  _Nullable x) {
+            NSLog(@"5:%@",x);
+        }];
+    }];
 }
 
 - (void)testSubject{
@@ -183,20 +281,45 @@
     
 }
 
-- (void)replay{
-//    RACSignal *sig = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
-//        [subscriber sendNext:@"《电影》"];
-//        [subscriber sendCompleted];
-//        return nil;
-//    }];
-//
-//    [sig subscribeNext:^(id  _Nullable x) {
-//        NSLog(@"小红看了%@",x);
-//    }];
-//
-//    [sig subscribeNext:^(id  _Nullable x) {
-//        NSLog(@"小明看了%@",x);
-//    }];
+- (void)testReplay{
+    __block int i = 0;
+    RACSignal *lSig = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+        [subscriber sendNext:[NSString stringWithFormat:@"《%@-%d》",@"电影", i]];
+        i++;
+        
+        [[RACScheduler mainThreadScheduler] afterDelay:1 schedule:^{
+            [subscriber sendNext:@"1s后发的内容"];
+            
+            //如果放到延迟外面和后面，会导致此闭包内代码无法被收到，因为信号已经发布完成了！
+            [subscriber sendCompleted];
+        }];
+
+        return nil;
+    }];
+    
+    [lSig subscribeNext:^(id  _Nullable x) {
+         NSLog(@"小1 看了%@",x);
+     }];
+
+     [lSig subscribeNext:^(id  _Nullable x) {
+         NSLog(@"小2 看了%@",x);
+     }];
+    
+    RACSignal *lS = lSig.replay;
+
+    [lS subscribeNext:^(id  _Nullable x) {
+        NSLog(@"小3 看了%@",x);
+    }];
+
+    [lS subscribeNext:^(id  _Nullable x) {
+        NSLog(@"小4 看了%@",x);
+    }];
+    
+    [[RACScheduler mainThreadScheduler] afterDelay:2 schedule:^{
+      [lS subscribeNext:^(id  _Nullable x) {
+            NSLog(@"2s后，小5 看了%@",x);
+        }];
+    }];
 }
 
 - (void)takeUntil{
