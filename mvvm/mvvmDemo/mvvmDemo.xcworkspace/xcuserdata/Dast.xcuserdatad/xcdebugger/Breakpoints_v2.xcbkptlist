@@ -18,22 +18,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "AF7F14CA-D1A7-4CDD-8755-9AD5F0C93394"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "mvvmDemo/PersonScoreVM.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
-            landmarkName = "-stepperNeedsHiddenSignal"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "20B84647-B8A3-4834-BD92-B46E40991AFB"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -41,8 +25,8 @@
             filePath = "mvvmDemo/ViewController.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "63"
-            endingLineNumber = "63"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
             landmarkName = "-viewDidLoad"
             landmarkType = "7">
          </BreakpointContent>
@@ -57,8 +41,8 @@
             filePath = "mvvmDemo/ViewController.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "89"
-            endingLineNumber = "89"
+            startingLineNumber = "80"
+            endingLineNumber = "80"
             landmarkName = "-viewDidLoad"
             landmarkType = "7">
          </BreakpointContent>
@@ -89,39 +73,55 @@
             filePath = "mvvmDemo/ViewController.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
+            startingLineNumber = "78"
+            endingLineNumber = "78"
+            landmarkName = "-viewDidLoad"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A41F682A-C6F7-4608-BAD3-FBD40AE063F0"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mvvmDemo/ViewController.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
             landmarkName = "-viewDidLoad"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "152815B6-A06B-45EC-ACFB-2CC839B589AC - 637cd42a407d31fa"
+                  uuid = "A41F682A-C6F7-4608-BAD3-FBD40AE063F0 - 599758d5bd2522fe"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "-[ViewController viewDidLoad]"
                   moduleName = "mvvmDemo"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Dast/Documents/github/mvvm/mvvmDemo/mvvmDemo/ViewController.m"
+                  urlString = "file:///Users/Dast%201%202/Documents/github/mvvmDemo/mvvm/mvvmDemo/mvvmDemo/ViewController.m"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "89"
-                  endingLineNumber = "89"
-                  offsetFromSymbolStart = "5663">
+                  startingLineNumber = "38"
+                  endingLineNumber = "38"
+                  offsetFromSymbolStart = "88">
                </Location>
                <Location
-                  uuid = "152815B6-A06B-45EC-ACFB-2CC839B589AC - 183899d9b732a2c4"
+                  uuid = "A41F682A-C6F7-4608-BAD3-FBD40AE063F0 - c13f615c6a60526f"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "__29-[ViewController viewDidLoad]_block_invoke_2.101"
+                  symbolName = "__29-[ViewController viewDidLoad]_block_invoke"
                   moduleName = "mvvmDemo"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Dast/Documents/github/mvvm/mvvmDemo/mvvmDemo/ViewController.m"
+                  urlString = "file:///Users/Dast%201%202/Documents/github/mvvmDemo/mvvm/mvvmDemo/mvvmDemo/ViewController.m"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "90"
-                  endingLineNumber = "90"
+                  startingLineNumber = "39"
+                  endingLineNumber = "39"
                   offsetFromSymbolStart = "44">
                </Location>
             </Locations>

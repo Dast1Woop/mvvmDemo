@@ -35,6 +35,8 @@
     [super viewDidLoad];
     self.title = @"信息";
     
+    [self testRAC];
+    
     @weakify(self);
     //新建VM
     PersonScoreVM *lVm = [PersonScoreVM vm];
@@ -111,6 +113,113 @@
     UIViewController *lVC = [[UIViewController alloc] init];
     lVC.view.backgroundColor = [UIColor yellowColor];
     [self.navigationController pushViewController:lVC animated:YES];
+}
+
+#pragma mark -  test
+- (void)testRAC{
+    [self replay];
+    
+//    [self takeUntil];
+//    [self testSubject];
+    [self testPublishConnect];
+}
+
+- (void)testPublishConnect{
+    RACSignal *lSig = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+        NSLog(@"sig 内部开始执行");
+        [[RACScheduler mainThreadScheduler] afterDelay:1 schedule:^{
+            [subscriber sendNext:@1];
+        }];
+        
+        [[RACScheduler mainThreadScheduler] afterDelay:2 schedule:^{
+            [subscriber sendNext:@2];
+        }];
+        
+        [[RACScheduler mainThreadScheduler] afterDelay:3 schedule:^{
+            [subscriber sendNext:@3];
+        }];
+        [[RACScheduler mainThreadScheduler] afterDelay:4 schedule:^{
+            [subscriber sendCompleted];
+        }];
+        return nil;
+    }];
+    
+    //把冷信号变为热信号2步法：发布，连接！简称“发姐”！两步骤写一起，防止忘记连接！
+    //冷信号 经过 发姐 后，变成了 热信号！
+    RACMulticastConnection *lCnt = [lSig publish];
+    [lCnt connect];
+    
+    RACSignal *lSigHot = lCnt.signal;
+    [[RACScheduler mainThreadScheduler] afterDelay:1.1 schedule:^{
+        [lSigHot subscribeNext:^(id  _Nullable x) {
+            NSLog(@"1:%@",x);
+        }];
+    }];
+    
+    [[RACScheduler mainThreadScheduler] afterDelay:2.1 schedule:^{
+          [lSigHot subscribeNext:^(id  _Nullable x) {
+              NSLog(@"2:%@",x);
+          }];
+      }];
+}
+
+- (void)testSubject{
+    
+    //热信号
+    RACSubject *lSub = [RACSubject subject];
+
+    [lSub sendNext:@1];
+    [lSub sendNext:@2];
+    [lSub sendNext:@3];
+    [lSub subscribeNext:^(id  _Nullable x) {
+         NSLog(@"RACSubject1:%@", x);
+     }];
+    [lSub sendNext:@4];
+    
+    [lSub subscribeNext:^(id  _Nullable x) {
+            NSLog(@"RACSubject2:%@", x);
+        }];
+   [lSub sendNext:@5];
+    
+}
+
+- (void)replay{
+//    RACSignal *sig = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+//        [subscriber sendNext:@"《电影》"];
+//        [subscriber sendCompleted];
+//        return nil;
+//    }];
+//
+//    [sig subscribeNext:^(id  _Nullable x) {
+//        NSLog(@"小红看了%@",x);
+//    }];
+//
+//    [sig subscribeNext:^(id  _Nullable x) {
+//        NSLog(@"小明看了%@",x);
+//    }];
+}
+
+- (void)takeUntil{
+    [
+     [
+      [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+        [[RACSignal interval:1 onScheduler:[RACScheduler mainThreadScheduler]] subscribeNext:^(id _Nullable x) {
+            [subscriber sendNext:@"直到世界尽头才能把我们分开"];
+        }];
+        return nil;
+    }]
+      takeUntil:
+      [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            NSLog(@"世界尽头了");
+            [subscriber sendNext:@"世界尽头了xxxx"];
+        });
+        return nil;
+    }]
+      ]
+     subscribeNext:^(id  _Nullable x) {
+        NSLog(@"%@", x);
+    }];
 }
 
 @end
