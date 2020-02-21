@@ -44,11 +44,7 @@
     
     //绑定
     RAC(self.nameTF, text) = RACObserve(self.personVm, person.name);
-    [[self.nameTF.rac_textSignal distinctUntilChanged] subscribeNext:^(NSString * _Nullable x) {
-        @strongify(self);
-        self.personVm.person.name = x;
-        //        NSLog(@"name changed to:%@", x);
-    }];
+    RAC(self.personVm, person.name) = self.nameTF.rac_textSignal;
     
     RAC(self.scoreLbl, text) = [RACObserve(self.personVm.person, score) map:^id _Nullable(NSNumber *  _Nullable value) {
         return value.description;
