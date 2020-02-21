@@ -80,7 +80,24 @@
         self.stepper.hidden = YES;
     }];
     
-    [self.uploadBtn addTarget:self.personVm action:@selector(uploadBtnDC:) forControlEvents:(UIControlEventTouchUpInside)];
+    self.uploadBtn.rac_command = self.personVm.uploadBtnDCCmd;
+//    [[self.uploadBtn rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(__kindof UIControl * _Nullable x) {
+//        [self.personVm.uploadBtnDCCmd execute:nil];
+//    }];
+    
+//    [
+     [[self.personVm.uploadBtnDCCmd executionSignals]
+//      switchToLatest]
+      subscribeNext:^(RACSignal *  _Nullable x) {
+        NSLog(@"uploading...");
+        [x subscribeNext:^(id  _Nullable x) {
+            NSLog(@"up suc");
+        }];
+    }];
+    
+    [self.personVm.uploadBtnDCCmd.errors subscribeNext:^(NSError * _Nullable x) {
+        NSLog(@"up error");
+    }];
     
     [self.personVm.uploadSucSubject subscribeNext:^(id  _Nullable x) {
         @strongify(self);

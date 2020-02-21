@@ -25,8 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 //上传成功 代理
 @property(nonatomic, strong) RACSubject *uploadSucSubject;
 
-//todo:id改为UIButton？此时，需要导入UIKit
-- (void)uploadBtnDC:(id)btn;
+@property(nonatomic, strong) RACCommand *uploadBtnDCCmd;
 
 //验证逻辑:
 //名字是否有效

@@ -14,6 +14,8 @@
 @property(nonatomic, copy) NSArray *forbiddenNamesArr;
 @property(nonatomic, assign) double uploadCrtTimes;
 
+@property(nonatomic, strong) RACSignal *uploadBtnEnableSignal;
+
 @end
 
 @implementation PersonScoreVM
@@ -61,17 +63,47 @@
     }];
 }
 
-- (void)uploadBtnDC:(id)btn{
-    self.uploadCrtTimes += 1;
-    NSLog(@"网络请求中。。。");
-    
-    //模拟网络请求，提示上传成功
-    [[RACScheduler scheduler] afterDelay:2 schedule:^{
-         NSLog(@"网络请求suc");
-        
-        [[RACScheduler mainThreadScheduler] schedule:^{
-            [self.uploadSucSubject sendNext:@1];
-        }];
+- (RACCommand *)uploadBtnDCCmd{
+    if (nil == _uploadBtnDCCmd) {
+       _uploadBtnDCCmd =  [[RACCommand alloc] initWithEnabled:self.uploadBtnEnableSignal signalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+              //上传网络请求
+              return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
+                  BOOL testSuc = YES;
+                  
+                  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                      if (testSuc) {
+                          [subscriber sendNext:@"suc"];
+                          [subscriber sendCompleted];
+                      }else{
+                          NSError *lErr = [NSError errorWithDomain:@"upload err" code:400 userInfo:nil];
+                          [subscriber sendError:lErr];
+                      }
+                  });
+                  
+                  return nil;
+              }];
+          }];
+    }
+    return _uploadBtnDCCmd;
+}
+
+//- (void)uploadBtnDC:(id)btn{
+//    self.uploadCrtTimes += 1;
+//    NSLog(@"网络请求中。。。");
+//
+//    //模拟网络请求，提示上传成功
+//    [[RACScheduler scheduler] afterDelay:2 schedule:^{
+//         NSLog(@"网络请求suc");
+//
+//        [[RACScheduler mainThreadScheduler] schedule:^{
+//            [self.uploadSucSubject sendNext:@1];
+//        }];
+//    }];
+//}
+
+- (RACSignal *)uploadBtnEnableSignal{
+    return [RACObserve(self, person.name) filter:^BOOL(NSString *  _Nullable value) {
+        return value.length > 3;
     }];
 }
 
