@@ -42,9 +42,33 @@
     PersonScoreVM *lVm = [PersonScoreVM vm];
     self.personVm = lVm;
     
-    //绑定
-    RAC(self.nameTF, text) = RACObserve(self.personVm, person.name);
-    RAC(self.personVm, person.name) = self.nameTF.rac_textSignal;
+    //双向绑定❌方法一(缺点：通过代码更改tf的text时，vm属性不会被更新)：
+    //    RAC(self.nameTF, text) = RACObserve(self.personVm, person.name);
+    //    RAC(self.personVm, person.name) = self.nameTF.rac_textSignal;
+    
+    //双向绑定❌方法二:会导致程序崩溃
+    //    RAC(self.nameTF, text) = RACObserve(self.personVm, person.name);
+    //    RAC(self.personVm, person.name) = self.nameTF.rac_textSignal;
+    //    [RACObserve(self.nameTF, text) subscribeNext:^(id  _Nullable x) {
+    //        self.personVm.person.name = x;
+    //    }];
+    
+    //双向绑定❌方法三（stackoverflow方法，问题同上面方法一）：
+    //    [
+    //     [self.nameTF.rac_newTextChannel
+    //      skip:1]
+    //     subscribe:RACChannelTo(self.personVm,person.name)];
+    //     [RACChannelTo(self.personVm,person.name) subscribe:self.nameTF.rac_newTextChannel];
+    
+    //双向绑定✅方法（实测 RACChannelTo 法，在iOS9+没问题）：
+    RACChannelTo(self.personVm,person.name) = RACChannelTo(self.nameTF,text);
+  //网上说iOS9有问题。通过键盘输入无法更新vm属性。如需支持iOS9，需要订阅rac_textSignal更新vm属性
+    [self.nameTF.rac_textSignal subscribeNext:^(NSString * _Nullable x) {
+        self.personVm.person.name = x;
+    }];
+    
+    self.nameTF.text = @"test";
+    NSLog(@"vm name:%@", self.personVm.person.name);
     
     RAC(self.scoreLbl, text) = [RACObserve(self.personVm.person, score) map:^id _Nullable(NSNumber *  _Nullable value) {
         return value.description;
@@ -89,12 +113,21 @@
      [[self.personVm.uploadBtnDCCmd executionSignals]
 //      switchToLatest]
       subscribeNext:^(RACSignal *  _Nullable x) {
-        NSLog(@"uploading...");
+        NSLog(@"uploading...,name:%@", self.personVm.person.name);
         [x subscribeNext:^(id  _Nullable x) {
             NSLog(@"up suc");
         }];
     }];
     
+    //This will send YES whenever -execute: is invoked and the created signal has not yet terminated. Once all executions have terminated, `executing` will send NO.
+       [self.personVm.uploadBtnDCCmd.executing subscribeNext:^(NSNumber * _Nullable x) {
+           NSLog(@"uploadBtnDCCmd is executing:%@",x);
+       }];
+    
+    //flatten：直接获取内容;switchToLatest也行
+    [[[self.personVm.uploadBtnDCCmd executionSignals] flatten] subscribeNext:^(id  _Nullable x) {
+        NSLog(@"flattened : %@", x);
+    }];
     [self.personVm.uploadBtnDCCmd.errors subscribeNext:^(NSError * _Nullable x) {
         NSLog(@"up error");
     }];
@@ -137,6 +170,16 @@
 //    [self testReplay];
 //    [self testReplayLazily];
     [self testReplayLast];
+    
+//    [self testGesture];
+}
+
+- (void)testGesture{
+    UITapGestureRecognizer *lTapG = [[UITapGestureRecognizer alloc] init];
+    [lTapG.rac_gestureSignal subscribeNext:^(__kindof UITapGestureRecognizer * _Nullable x) {
+        NSLog(@"lTapG:%@", x);
+    }];
+    [self.view addGestureRecognizer:lTapG];
 }
 
 - (void)testReplayLast{

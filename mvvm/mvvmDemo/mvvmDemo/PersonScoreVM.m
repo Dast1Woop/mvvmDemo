@@ -72,7 +72,7 @@
                   
                   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                       if (testSuc) {
-                          [subscriber sendNext:@"suc"];
+                          [subscriber sendNext:@"suc content"];
                           [subscriber sendCompleted];
                       }else{
                           NSError *lErr = [NSError errorWithDomain:@"upload err" code:400 userInfo:nil];
@@ -101,9 +101,11 @@
 //    }];
 //}
 
-- (RACSignal *)uploadBtnEnableSignal{
-    return [RACObserve(self, person.name) filter:^BOOL(NSString *  _Nullable value) {
-        return value.length > 3;
+- (RACSignal<NSNumber *> *)uploadBtnEnableSignal{
+    
+    //注意：此处不能使用 filter！！！，只能用map。因为RACCommand的enable参数是RACSignal<NSNumber *> *类型。用filter会导致崩溃！！！
+    return [RACObserve(self, person.name) map:^id _Nullable(NSString *  _Nullable value) {
+         return @(value.length > 3);
     }];
 }
 
