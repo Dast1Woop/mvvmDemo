@@ -188,7 +188,7 @@
     [[lCmd.executionSignals switchToLatest] subscribeNext:^(id  _Nullable x) {
         NSLog(@"cmd log: %@",x);
     }];
-    [lCmd execute:@2];
+    [lCmd  execute:@2];
     //1和2不会被log！因为订阅前的1肯定无法log。2执行时，会受到1的影响（去掉1，可打印2）。
     [[RACScheduler mainThreadScheduler] afterDelay:1 schedule:^{
         [lCmd execute:@3];
