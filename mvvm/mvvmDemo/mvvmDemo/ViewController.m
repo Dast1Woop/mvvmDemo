@@ -18,6 +18,7 @@
 #import <ReactiveObjC.h>
 #import "PersonScoreVM.h"
 
+
 @interface ViewController ()
 
 @property (weak, nonatomic) IBOutlet UITextField *nameTF;
@@ -60,7 +61,7 @@
     //     subscribe:RACChannelTo(self.personVm,person.name)];
     //     [RACChannelTo(self.personVm,person.name) subscribe:self.nameTF.rac_newTextChannel];
     
-    //双向绑定✅方法（实测 RACChannelTo 法，在iOS9+没问题）：
+    //双向绑定✅方法（实测 RACChannelTo 法，在iOS9+没问题）,但前提是触发属性的KVO机制才能实现。
     RACChannelTo(self.personVm,person.name) = RACChannelTo(self.nameTF,text);
   //网上说iOS9有问题。通过键盘输入无法更新vm属性。如需支持iOS9，需要订阅rac_textSignal更新vm属性
     [self.nameTF.rac_textSignal subscribeNext:^(NSString * _Nullable x) {
@@ -167,12 +168,31 @@
 //    [self takeUntil];
 //    [self testSubject];
 //    [self testPublishConnect];
-//    [self testReplay];
+    [self testReplay];
 //    [self testReplayLazily];
 //    [self testReplayLast];
     
 //    [self testGesture];
-    [self testRACCommand];
+//    [self testRACCommand];
+    
+//    [self testSequecce];
+//    [self testTimeOut];
+}
+
+//Sends an error after `interval` seconds if the source doesn't complete before then.
+- (void)testTimeOut {
+    RACSignal *signal = [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [subscriber sendNext:@"100"];
+//        [subscriber sendCompleted];
+//        [subscriber sendError:nil];
+        return nil;
+    }] timeout:1 onScheduler: [RACScheduler currentScheduler]]; // 这里将时间操作放在当前线程中执行
+    
+    [signal subscribeNext:^(id x) {
+        NSLog(@"%@",x);
+    } error:^(NSError *error) {
+        NSLog(@"1秒后会自动调用?");
+    }];
 }
 
 - (void)testRACCommand{
@@ -192,6 +212,23 @@
     //1和2不会被log！因为订阅前的1肯定无法log。2执行时，会受到1的影响（去掉1，可打印2）。
     [[RACScheduler mainThreadScheduler] afterDelay:1 schedule:^{
         [lCmd execute:@3];
+    }];
+}
+
+- (void)testSequecce{
+    NSArray *lArr = @[@1, @2, @3];
+    [lArr.rac_sequence.signal subscribeNext:^(id  _Nullable x) {
+        NSLog(@"x=%@", x);
+    }];
+    
+    NSDictionary *lDic = @{@1 : @11,
+                           @2 : @22,
+                           @3 : @33
+    };
+    [lDic.rac_sequence.signal subscribeNext:^(RACTuple*  _Nullable x) {
+//        NSLog(@"dic:%@",x);
+        RACTupleUnpack(NSNumber *key, NSNumber *value) = x;
+        NSLog(@"key:%@,v:%@", key, value);
     }];
 }
 
